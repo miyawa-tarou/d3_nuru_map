@@ -42,7 +42,7 @@
                     if (d.properties.code === 46) { // 鹿児島をクリックしたときに
                         var zoomCenter = projection([130.6, 31.6]);
                         var zoom = 20000/1600;
-                        svg.selectAll("path").attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + zoom + ")translate(" + - zoomCenter[0] + "," + - zoomCenter[1] + ")");
+                        svg.selectAll("path").transition().duration(2000).attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + zoom + ")translate(" + - zoomCenter[0] + "," + - zoomCenter[1] + ")");
                     }
                 });
 
