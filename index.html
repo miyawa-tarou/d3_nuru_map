@@ -37,7 +37,14 @@
                 .enter() // dataで入れた配列をそれぞれ以下のpathにしていく
                 .append("path")
                 .attr("d", path) // <path d="">に　path()の返り値を入れていく
-                .attr("fill", function(d,i){ return d.properties.code === 46 ? "darkgreen" : "green";}); // 鹿児島だけダークグリーン
+                .attr("fill", function(d,i){ return d.properties.code === 46 ? "darkgreen" : "green";}) // 鹿児島だけダークグリーン
+                .on("click", function(d,i){
+                    if (d.properties.code === 46) { // 鹿児島をクリックしたときに
+                        var zoomCenter = projection([130.6, 31.6]);
+                        var zoom = 20000/1600;
+                        svg.selectAll("path").attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + zoom + ")translate(" + - zoomCenter[0] + "," + - zoomCenter[1] + ")");
+                    }
+                });
 
             d3.xml('./data/VFVO53_test.xml').then(function(data) {
                 var ashCoordinate = convertCoordinateToArray(getFirstCoordinate(data));
