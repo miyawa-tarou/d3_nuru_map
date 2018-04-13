@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+</head>
+<body>
+<svg id="map" style="background-color: #91c7ff;"></svg>
+
+<div>地図：https://github.com/miyawa-tarou/japan_map_json/blob/master/data/topojson/pref.json</div>
+
+<script>
+    (function() {
+
+        // SVGの大きさ
+        var width = 800;
+        var height = 600;
+
+        // 中心座標とスケール
+        var projection = d3.geoMercator()
+            .center([137, 38])
+            .scale(1600)
+            .translate([width / 2, height / 2]);
+
+        // おまじない
+        var path = d3.geoPath().projection(projection);
+
+        var svg = d3.select("#map")
+            .attr("width", width)
+            .attr("height", height);
+
+        d3.json("./map/japan.json").then(function(data) {
+            svg.selectAll("path")  // おまじない。というか理解できてない
+                .data(topojson.feature(data, data.objects.pref).features)
+                .enter() // dataで入れた配列をそれぞれ以下のpathにしていく
+                .append("path")
+                .attr("d", path) // <path d="">に　path()の返り値を入れていく
+                .attr("fill", function(d,i){ return d.properties.code === 46 ? "darkgreen" : "green";}); // 鹿児島だけダークグリーン
+
+            d3.xml('./data/VFVO53_test.xml').then(function(data) {
+                var ashCoordinate = convertCoordinateToArray(getFirstCoordinate(data));
+                var svgCoordinate = [];
+                for (var i = 0; i < ashCoordinate.length; i++) {
+                    // 緯度経度をSVG上の座標に変換する。またのちの処理のため文字列での,区切りに変える。
+                    svgCoordinate.push(projection([ashCoordinate[i][1], ashCoordinate[i][0]]).join(',')); // convertCoordinateToArray内で順番変えたほうが賢い
+                }
+                svg.append('g')
+                    .attr('class', 'ashFall')
+                    .append("polygon")
+                    .attr("points", svgCoordinate.join(' ')) // 各座標はスペース区切りで、"x,y x,y x,y"
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1)
+                    .attr("fill", "#333")
+                    .attr("fill-opacity", "0.5");
+            });
+
+        });
+
+
+        /**
+         * 一つ目の降灰予報のPolygon情報だけ取る
+         * @param data 降灰予報XML
+         * @returns {string}
+         */
+        function getFirstCoordinate(data) {
+            var ashInfo = data.getElementsByTagName('AshInfo');
+
+            var kind = ashInfo[0].getElementsByTagName('Kind'); // 一つ目なので0でforで回せばその後の時間も取れます
+            for (var j = 0; j < kind.length; j++) {
+                if (kind[j].getElementsByTagName('Code')[0].innerHTML === "70") { // 降灰の70だけとる
+                    return kind[j].getElementsByTagName('jmx_eb:Polygon')[0].innerHTML;
+                }
+            }
+        }
+
+        /**
+         * 文字列の緯度経度情報を配列にする
+         * @param string
+         * @returns {Array}
+         */
+        function convertCoordinateToArray(string) {
+            var array = string.split('/');
+            var coordinates = [];
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] === "") {
+                    continue;
+                }
+                var tmp = array[i].split('+'); // -もあるかもだが今回の本質でないので+のみ（いい感じの方法があったら知りたい）
+                coordinates.push([tmp[1],tmp[2]]); // 先頭に+がついているので0は空になり不要
+            }
+            return coordinates;
+        }
+    })();
+
+</script>
+</body>
+</html>
