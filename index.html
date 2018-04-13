@@ -55,8 +55,8 @@
                 }
                 svg.append('g')
                     .attr('class', 'ashFall')
-                    .append("polygon")
-                    .attr("points", svgCoordinate.join(' ')) // 各座標はスペース区切りで、"x,y x,y x,y"
+                    .append("path")
+                    .attr("d", 'M' + svgCoordinate.join('L') + 'Z') // 各座標はスペース区切りで、"x,y x,y x,y"
                     .attr("stroke", "black")
                     .attr("stroke-width", 1)
                     .attr("fill", "#333")
