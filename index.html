@@ -43,6 +43,7 @@
                         var zoomCenter = projection([130.6, 31.6]);
                         var zoom = 20000/1600;
                         svg.selectAll("path").transition().duration(2000).attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + zoom + ")translate(" + - zoomCenter[0] + "," + - zoomCenter[1] + ")");
+                        svg.select(".ashFall").select('path').transition().duration(2000).attr("stroke-width", 1600/20000).attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + zoom + ")translate(" + - zoomCenter[0] + "," + - zoomCenter[1] + ")");
                     }
                 });
 
