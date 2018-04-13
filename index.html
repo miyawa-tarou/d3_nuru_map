@@ -37,7 +37,7 @@
                 .enter() // dataで入れた配列をそれぞれ以下のpathにしていく
                 .append("path")
                 .attr("d", path) // <path d="">に　path()の返り値を入れていく
-                .attr("fill", function(d,i){ return d.properties.code === 46 ? "darkgreen" : "green";}) // 鹿児島だけダークグリーン
+                .attr("class", function(d,i){ return "Prefs Pref" + d.properties.code;})
                 .on("click", function(d,i){
                     if (d.properties.code === 46) { // 鹿児島をクリックしたときに
                         var zoomCenter = projection([130.6, 31.6]);
@@ -103,5 +103,14 @@
     })();
 
 </script>
+<style>
+    .Prefs {
+        fill: green;
+    }
+    .Pref46 {
+        fill: darkgreen;
+        cursor: pointer;
+    }
+</style>
 </body>
 </html>
